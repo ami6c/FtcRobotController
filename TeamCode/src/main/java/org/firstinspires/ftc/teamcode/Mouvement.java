@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp
 public class Mouvement extends OpMode {
     motorMouv motorM = new motorMouv();
+    double speed = 0.5;
 
     @Override
     public void init() {
-        motorM.init(hardwareMap, 0.1);
+        motorM.init(hardwareMap, speed);
     }
 
     @Override
@@ -19,25 +20,47 @@ public class Mouvement extends OpMode {
         telemetry.addData("leftTrigger", gamepad1.left_trigger_pressed);
         telemetry.addData("left x", gamepad1.left_stick_x);
 
-        while (gamepad1.right_trigger_pressed) {
-            telemetry.addData("rightTrigger", gamepad1.right_trigger_pressed);
-            telemetry.addData("leftTrigger", gamepad1.left_trigger_pressed);
-            telemetry.addData("left x", gamepad1.left_stick_x);
-            
-            if (gamepad1.left_stick_x < 0) {
+        // Move forward
+        if (gamepad1.right_trigger_pressed) {
+            motorM.setMotorSpeed();
+            // Move Left
+            if (gamepad1.left_stick_x < 0 || gamepad1.dpad_left) {
                 motorM.turnLeft();
-            } if (gamepad1.left_stick_x > 0) {
+            }
+            // Move Right
+            if (gamepad1.left_stick_x > 0 || gamepad1.dpad_right) {
                 motorM.turnRight();
-            } else {
-                motorM.setMotorSpeed();
             }
         }
-
-        while (gamepad1.left_trigger_pressed) {
+        // Move backward
+        else if (gamepad1.left_trigger_pressed) {
             motorM.mouvBackwards();
+            // Move Left
+            if (gamepad1.left_stick_x < 0 || gamepad1.dpad_left) {
+                motorM.turnLeft();
+            }
+            // Move Right
+            if (gamepad1.left_stick_x > 0 || gamepad1.dpad_right) {
+                motorM.turnRight();
+            }
+        }
+        // Stop moving
+        else {
+            motorM.stop();
         }
 
-        motorM.motorBreak();
+        // Stop vehicle
+        /*
+        if (gamepad1.atRest()) {
+            motorM.motorBreak();
+        }
+        if (gamepad1.b) {
+            motorM.motorBreak();
+        }
+        if (gamepad1.y) {
+            motorM.motorFloat();
+        }
+        */
 
     }
 }
